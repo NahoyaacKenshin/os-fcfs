@@ -7,9 +7,9 @@ import ResultsTable from './components/ResultsTable';
 
 export default function CPUSchedulingFCFS() {
 const [processes, setProcesses] = useState([
-{ id: 1, name: 'P1', arrivalTime: 0, burstTime: 5 },
-{ id: 2, name: 'P2', arrivalTime: 1, burstTime: 3 },
-{ id: 3, name: 'P3', arrivalTime: 2, burstTime: 8 }
+{ id: 1, name: 'P1', arrivalTime: 0, burstTime: 1 },
+{ id: 2, name: 'P2', arrivalTime: 1, burstTime: 1 },
+{ id: 3, name: 'P3', arrivalTime: 2, burstTime: 1 }
 ]);
 
 
