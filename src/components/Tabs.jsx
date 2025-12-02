@@ -3,8 +3,7 @@ export default function Tabs({ activeTab, onTabChange }) {
     { id: 'fcfs', label: 'FCFS' },
     { id: 'sjf-nonpreemptive', label: 'SJF (Non-Preemptive)' },
     { id: 'sjf-preemptive', label: 'SJF (Preemptive)' },
-    { id: 'priority', label: 'Priority' },
-    { id: 'roundrobin', label: 'Round Robin' }
+    { id: 'priority', label: 'Priority' }
   ];
 
   return (

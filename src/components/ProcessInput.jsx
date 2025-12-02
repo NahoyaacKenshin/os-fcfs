@@ -1,8 +1,7 @@
 import { Plus, Trash2 } from "lucide-react";
 
-export default function ProcessInput({ processes, addProcess, deleteProcess, updateProcess, calculate, activeTab, timeQuantum, setTimeQuantum }) {
+export default function ProcessInput({ processes, addProcess, deleteProcess, updateProcess, calculate, activeTab }) {
     const showPriority = activeTab === 'priority';
-    const showTimeQuantum = activeTab === 'roundrobin';
 
     return (
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-[0_0_40px_rgba(6,182,212,0.3)] border border-cyan-500/20 p-6 mb-6">
@@ -16,22 +15,6 @@ export default function ProcessInput({ processes, addProcess, deleteProcess, upd
                     Add Process
                 </button>
             </div>
-
-            {showTimeQuantum && (
-                <div className="mb-4 p-4 bg-slate-700/30 rounded-lg border border-cyan-500/20">
-                    <label className="block text-cyan-400 font-semibold mb-2">
-                        Time Quantum
-                    </label>
-                    <input
-                        type="number"
-                        min="1"
-                        value={timeQuantum}
-                        onChange={(e) => setTimeQuantum(parseInt(e.target.value) || 1)}
-                        className="w-32 px-3 py-2 bg-slate-700/50 border border-cyan-500/30 rounded text-gray-300"
-                    />
-                    <p className="text-gray-400 text-sm mt-2">Time slice allocated to each process in the ready queue</p>
-                </div>
-            )}
 
             <div className="overflow-x-auto">
                 <table className="w-full">

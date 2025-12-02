@@ -5,7 +5,6 @@ export default function Header({ activeTab }) {
       case 'sjf-nonpreemptive': return 'Shortest Job First (Non-Preemptive)';
       case 'sjf-preemptive': return 'Shortest Job First (Preemptive)';
       case 'priority': return 'Priority Scheduling';
-      case 'roundrobin': return 'Round Robin Scheduling';
       default: return 'First Come First Serve (FCFS)';
     }
   };

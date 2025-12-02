@@ -3,7 +3,6 @@ import Header from './components/Header';
 import ProcessInput from './components/ProcessInput';
 import GanttChart from './components/GanttChart';
 import ResultsTable from './components/ResultsTable';
-import ReadyQueue from './components/ReadyQueue';
 import Tabs from './components/Tabs';
 
 
@@ -17,7 +16,6 @@ const [processes, setProcesses] = useState([
 
 
 const [results, setResults] = useState(null);
-const [timeQuantum, setTimeQuantum] = useState(2);
 
 useEffect(() => {
 setResults(null);
@@ -195,87 +193,12 @@ completed.add(process.id);
 setResults({ processes: result, ganttChart });
 };
 
-const calculateRoundRobin = () => {
-if (processes.length === 0 || timeQuantum <= 0) return;
-const processesCopy = processes.map(p => ({...p, remainingTime: p.burstTime}));
-const ganttChart = [];
-const result = [];
-const readyQueueStates = [];
-let currentTime = 0;
-const readyQueue = [];
-const completed = new Set();
-let processIndex = 0;
-
-const sortedByArrival = [...processesCopy].sort((a,b) => a.arrivalTime - b.arrivalTime);
-
-const addReadyQueueState = (time, queue) => {
-readyQueueStates.push({
-time: time,
-queue: queue.map(p => ({ name: p.name }))
-});
-};
-
-while (completed.size < processesCopy.length) {
-while (processIndex < sortedByArrival.length && sortedByArrival[processIndex].arrivalTime <= currentTime) {
-readyQueue.push(sortedByArrival[processIndex]);
-processIndex++;
-}
-
-if (readyQueue.length === 0) {
-if (processIndex < sortedByArrival.length) {
-const nextProcess = sortedByArrival[processIndex];
-addReadyQueueState(currentTime, []);
-ganttChart.push({name:'IDLE', startTime:currentTime, duration:nextProcess.arrivalTime-currentTime, isIdle:true});
-currentTime = nextProcess.arrivalTime;
-readyQueue.push(nextProcess);
-processIndex++;
-} else {
-break;
-}
-}
-
-if (readyQueue.length > 0) {
-addReadyQueueState(currentTime, [...readyQueue]);
-const process = readyQueue.shift();
-const startTime = currentTime;
-const executionTime = Math.min(process.remainingTime, timeQuantum);
-process.remainingTime -= executionTime;
-currentTime += executionTime;
-
-if (ganttChart.length > 0 && ganttChart[ganttChart.length - 1].name === process.name && !ganttChart[ganttChart.length - 1].isIdle) {
-ganttChart[ganttChart.length - 1].duration += executionTime;
-} else {
-ganttChart.push({name:process.name, startTime, duration:executionTime, isIdle:false});
-}
-
-while (processIndex < sortedByArrival.length && sortedByArrival[processIndex].arrivalTime <= currentTime) {
-readyQueue.push(sortedByArrival[processIndex]);
-processIndex++;
-}
-
-if (process.remainingTime > 0) {
-readyQueue.push(process);
-} else {
-completed.add(process.id);
-const completionTime = currentTime;
-const turnaroundTime = completionTime - process.arrivalTime;
-const waitingTime = turnaroundTime - process.burstTime;
-result.push({...process, startTime, completionTime, turnaroundTime, waitingTime});
-}
-addReadyQueueState(currentTime, [...readyQueue]);
-}
-}
-
-setResults({ processes: result, ganttChart, readyQueueStates });
-};
-
 const getCalculateFunction = () => {
 switch(activeTab) {
 case 'fcfs': return calculateFCFS;
 case 'sjf-nonpreemptive': return calculateSJFNonPreemptive;
 case 'sjf-preemptive': return calculateSJFPreemptive;
 case 'priority': return calculatePriority;
-case 'roundrobin': return calculateRoundRobin;
 default: return calculateFCFS;
 }
 };
@@ -286,14 +209,11 @@ return (
 <div className="max-w-7xl mx-auto">
 <Header activeTab={activeTab} />
 <Tabs activeTab={activeTab} onTabChange={setActiveTab} />
-<ProcessInput processes={processes} addProcess={addProcess} deleteProcess={deleteProcess} updateProcess={updateProcess} calculate={getCalculateFunction()} activeTab={activeTab} timeQuantum={timeQuantum} setTimeQuantum={setTimeQuantum} />
+<ProcessInput processes={processes} addProcess={addProcess} deleteProcess={deleteProcess} updateProcess={updateProcess} calculate={getCalculateFunction()} activeTab={activeTab} />
 {results && (
 <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow border border-cyan-500/20 p-6">
 <h2 className="text-xl font-bold text-cyan-400 mb-4">Results</h2>
 <GanttChart gantt={results.ganttChart} />
-{activeTab === 'roundrobin' && results.readyQueueStates && (
-<ReadyQueue readyQueueStates={results.readyQueueStates} />
-)}
 <ResultsTable results={results.processes} />
 </div>
 )}
