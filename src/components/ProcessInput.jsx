@@ -1,7 +1,8 @@
 import { Plus, Trash2 } from "lucide-react";
 
-export default function ProcessInput({ processes, addProcess, deleteProcess, updateProcess, calculate }) {
-
+export default function ProcessInput({ processes, addProcess, deleteProcess, updateProcess, calculate, activeTab, timeQuantum, setTimeQuantum }) {
+    const showPriority = activeTab === 'priority';
+    const showTimeQuantum = activeTab === 'roundrobin';
 
     return (
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-[0_0_40px_rgba(6,182,212,0.3)] border border-cyan-500/20 p-6 mb-6">
@@ -16,28 +17,50 @@ export default function ProcessInput({ processes, addProcess, deleteProcess, upd
                 </button>
             </div>
 
+            {showTimeQuantum && (
+                <div className="mb-4 p-4 bg-slate-700/30 rounded-lg border border-cyan-500/20">
+                    <label className="block text-cyan-400 font-semibold mb-2">
+                        Time Quantum
+                    </label>
+                    <input
+                        type="number"
+                        min="1"
+                        value={timeQuantum}
+                        onChange={(e) => setTimeQuantum(parseInt(e.target.value) || 1)}
+                        className="w-32 px-3 py-2 bg-slate-700/50 border border-cyan-500/30 rounded text-gray-300"
+                    />
+                    <p className="text-gray-400 text-sm mt-2">Time slice allocated to each process in the ready queue</p>
+                </div>
+            )}
+
             <div className="overflow-x-auto">
                 <table className="w-full">
                     <thead>
                         <tr className="border-b border-cyan-500/20">
-                            <th className="text-left text-cyan-400 py-3 px-2">Process</th>
-                            <th className="text-left text-cyan-400 py-3 px-2">Arrival Time</th>
-                            <th className="text-left text-cyan-400 py-3 px-2">Burst Time</th>
+                            <th className="text-left text-cyan-400 py-3 px-2 border-r border-cyan-500/20">Process</th>
+                            <th className="text-left text-cyan-400 py-3 px-2 border-r border-cyan-500/20">Arrival Time</th>
+                            <th className="text-left text-cyan-400 py-3 px-2 border-r border-cyan-500/20">Burst Time</th>
+                            {showPriority && <th className="text-left text-cyan-400 py-3 px-2 border-r border-cyan-500/20">Priority</th>}
                             <th className="text-left text-cyan-400 py-3 px-2">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {processes.map(process => (
                             <tr key={process.id} className="border-b border-slate-700/50">
-                                <td className="py-3 px-2">
+                                <td className="py-3 px-2 border-r border-slate-700/50">
                                     <span className="text-gray-300 font-mono">{process.name}</span>
                                 </td>
-                                <td className="py-3 px-2">
+                                <td className="py-3 px-2 border-r border-slate-700/50">
                                     <input type="number" min="0" value={process.arrivalTime} onChange={(e) => updateProcess(process.id, 'arrivalTime', e.target.value)} className="w-24 px-3 py-1 bg-slate-700/50 border border-cyan-500/30 rounded text-gray-300" />
                                 </td>
-                                <td className="py-3 px-2">
+                                <td className="py-3 px-2 border-r border-slate-700/50">
                                     <input type="number" min="1" value={process.burstTime} onChange={(e) => updateProcess(process.id, 'burstTime', e.target.value)} className="w-24 px-3 py-1 bg-slate-700/50 border border-cyan-500/30 rounded text-gray-300" />
                                 </td>
+                                {showPriority && (
+                                    <td className="py-3 px-2 border-r border-slate-700/50">
+                                        <input type="number" min="0" value={process.priority || 0} onChange={(e) => updateProcess(process.id, 'priority', e.target.value)} className="w-24 px-3 py-1 bg-slate-700/50 border border-cyan-500/30 rounded text-gray-300" />
+                                    </td>
+                                )}
                                 <td className="py-3 px-2 md:flex md:justify-start md:items-center flex justify-center items-center">
                                     <button
                                         onClick={() => deleteProcess(process.id)}
